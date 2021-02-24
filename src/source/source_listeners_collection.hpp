@@ -20,10 +20,12 @@ class SourceListenersCollection
     ~SourceListenersCollection() = default;
     SourceListenersCollection(const SourceListenersCollection &) = delete;
     SourceListenersCollection &operator=(SourceListenersCollection const &) = delete;
+    SourceListenersCollection(SourceListenersCollection &&) = default;
+    SourceListenersCollection &operator=(SourceListenersCollection &&) = default;
 
-    void subscribe(ISourceListener &&listener);
+    void subscribe(std::shared_ptr<ISourceListener> listener);
     std::vector<ISourceListener *> getSubscribers();
 
   private:
-    std::vector<std::unique_ptr<ISourceListener>> listeners_;
+    std::vector<std::shared_ptr<ISourceListener>> listeners_;
 };

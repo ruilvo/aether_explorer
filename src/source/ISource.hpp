@@ -17,7 +17,7 @@
 class ISource
 {
   public:
-    virtual ~ISource();
+    virtual ~ISource() = default;
 
     virtual void start();
     virtual void stop();

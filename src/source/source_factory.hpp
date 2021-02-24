@@ -22,6 +22,8 @@ class SourceFactory
     ~SourceFactory() = default;
     SourceFactory(const SourceFactory &) = delete;
     SourceFactory &operator=(SourceFactory const &) = delete;
+    SourceFactory(SourceFactory &&) = default;
+    SourceFactory &operator=(SourceFactory &&) = default;
 
     std::unique_ptr<ISource> createSource(const std::string &sourceName);
     std::vector<std::string> getNames();

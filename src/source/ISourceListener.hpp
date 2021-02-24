@@ -15,6 +15,8 @@ class ISourceListener
 {
   public:
     virtual ~ISourceListener();
+    ISourceListener(const ISourceListener &) = delete;
+    ISourceListener &operator=(ISourceListener const &) = delete;
     virtual void setSampleRate(double sampleRate);
     virtual void setCentreFrequency(double centreFrequency);
     virtual void receiveSamples(std::vector<std::complex<float>> &samples);

@@ -12,6 +12,7 @@
 #include "ISourceListener.hpp"
 #include "source_factory.hpp"
 #include "source_listeners_collection.hpp"
+#include "source_manager_widget.hpp"
 
 #include <QWidget>
 
@@ -34,7 +35,7 @@ class SourceManager
 
   private:
     std::unique_ptr<ISource> currentSource_;
-    std::unique_ptr<QWidget> widget_; // TODO: replace with the concrete widget type
+    std::unique_ptr<SourceManagerWidget> widget_;
     SourceFactory sourceFactory_;
     SourceListenersCollection listenersCollection_;
 };

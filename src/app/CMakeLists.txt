@@ -4,5 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Consult LICENSE.txt for detailed licensing information
 
-add_subdirectory("source")
-add_subdirectory("app")
+add_executable(app "main.cpp")
+target_link_libraries(app PRIVATE Qt::Core Qt::Widgets source)
+run_windeployqt(app)

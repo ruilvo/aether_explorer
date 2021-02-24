@@ -8,9 +8,9 @@
 
 #include "source_listeners_collection.hpp"
 
-void SourceListenersCollection::subscribe(ISourceListener &&listener)
+void SourceListenersCollection::subscribe(std::shared_ptr<ISourceListener> listener)
 {
-    listeners_.push_back(std::make_unique<ISourceListener>(listener));
+    listeners_.push_back(std::move(listener));
 };
 
 std::vector<ISourceListener *> SourceListenersCollection::getSubscribers()

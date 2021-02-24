@@ -10,8 +10,10 @@
 
 SourceManager::SourceManager(SourceFactory &&sourceFactory,
                              SourceListenersCollection &&listenersCollection)
-    : currentSource_(std::unique_ptr<ISource>(nullptr)), widget_(nullptr),
-      sourceFactory_(sourceFactory), listenersCollection_(listenersCollection){};
+    : currentSource_(std::unique_ptr<ISource>(nullptr)),
+      widget_(std::make_unique<SourceManagerWidget>(this)),
+      sourceFactory_(std::move(sourceFactory)),
+      listenersCollection_(std::move(listenersCollection)){};
 
 ISource *SourceManager::getSource()
 {
