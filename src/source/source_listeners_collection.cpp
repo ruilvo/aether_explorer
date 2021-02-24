@@ -12,3 +12,13 @@ void SourceListenersCollection::subscribe(ISourceListener &&listener)
 {
     listeners_.push_back(std::make_unique<ISourceListener>(listener));
 };
+
+std::vector<ISourceListener *> SourceListenersCollection::getSubscribers()
+{
+    std::vector<ISourceListener *> subs;
+    for (const auto &listener : listeners_)
+    {
+        subs.push_back(listener.get());
+    }
+    return subs;
+}

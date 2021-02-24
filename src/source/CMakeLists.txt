@@ -12,6 +12,8 @@ add_library(
   "ISource.hpp"
   "ISource.cpp"
   "source_factory.hpp"
-  "source_factory.cpp")
+  "source_factory.cpp"
+  "source_manager.hpp"
+  "source_manager.cpp")
 target_include_directories(source PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(source PUBLIC Qt::Core Qt::Widgets)

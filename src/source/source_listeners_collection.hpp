@@ -20,6 +20,7 @@ class SourceListenersCollection
     ~SourceListenersCollection() = default;
 
     void subscribe(ISourceListener &&listener);
+    std::vector<ISourceListener *> getSubscribers();
 
   private:
     std::vector<std::unique_ptr<ISourceListener>> listeners_;
