@@ -9,14 +9,14 @@ macro(download_miniaudio)
   message(STATUS "Downloading miniaudio.h")
   file(
     DOWNLOAD "https://raw.githubusercontent.com/mackron/miniaudio/master/miniaudio.h"
-    "${EXTDEP_BUILD_DIR}/include/miniaudio/miniaudio.h"
+    "${AETHER_EXTDEP_DOWNLOAD_DIR}/include/miniaudio/miniaudio.h"
     TLS_VERIFY ON
     SHOW_PROGRESS)
 endmacro()
 
 set(MINIAUDIO_H "${AETHER_EXTDEP_DOWNLOAD_DIR}/include/miniaudio/miniaudio.h")
 # Update when miniaud.io updates
-set(MINIAUDIO_H_MD5_GOOD "ac7ca6859e35a6bb9155aecfb4f0b3be")
+set(MINIAUDIO_H_MD5_GOOD "bec8ad66bb799b3305fa3a3427d917bb")
 
 if(NOT EXISTS "${MINIAUDIO_H}")
   download_miniaudio()

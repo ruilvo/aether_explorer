@@ -9,7 +9,9 @@ cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 project(aether_explorer)
 
 # Options ---------------
-option(AETHER_USE_AVX2 "Use AVX2 instructions. [TODO: detect this]" ON)
+option(AETHER_USE_SSE2 "Use SSE2 instructions." OFF)
+option(AETHER_USE_AVX "Use AVX instructions." OFF)
+option(AETHER_USE_AVX2 "Use AVX2 instructions." ON)
 # -----------------------
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -22,18 +24,12 @@ set(CMAKE_CXX_STANDARD 17)
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast /openmp:experimental")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fp:fast /openmp:experimental")
-  if(AETHER_USE_AVX2)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX2")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /arch:AVX2")
-  endif()
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -fopenmp")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffast-math -fopenmp")
-  if(AETHER_USE_AVX2)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=haswell")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=haswell")
-  endif()
 endif()
+
+include(enablesimd)
 
 # Up the warning levels
 if(MSVC)
@@ -50,6 +46,13 @@ include(download_miniaudio)
 
 # Enable link-time optimization globally
 include(enable_ipo)
+
+# Run Conan
+include(process_conan)
+
+# Find packages provided by Conan
+find_package(Boost REQUIRED COMPONENTS boost)
+find_package(FFTW3f REQUIRED COMPONENTS fftw3f)
 
 # Windeployqt macro
 include(run_windeployqt)
