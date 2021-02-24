@@ -18,6 +18,8 @@ class SourceListenersCollection
   public:
     SourceListenersCollection() = default;
     ~SourceListenersCollection() = default;
+    SourceListenersCollection(const SourceListenersCollection &) = delete;
+    SourceListenersCollection &operator=(SourceListenersCollection const &) = delete;
 
     void subscribe(ISourceListener &&listener);
     std::vector<ISourceListener *> getSubscribers();

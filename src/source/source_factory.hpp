@@ -20,6 +20,8 @@ class SourceFactory
   public:
     SourceFactory() = default;
     ~SourceFactory() = default;
+    SourceFactory(const SourceFactory &) = delete;
+    SourceFactory &operator=(SourceFactory const &) = delete;
 
     std::unique_ptr<ISource> createSource(const std::string &sourceName);
     std::vector<std::string> getNames();
