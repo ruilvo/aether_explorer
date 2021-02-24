@@ -18,6 +18,8 @@ class ISource
 {
   public:
     virtual ~ISource() = default;
+    ISource(const ISource &) = delete;
+    ISource &operator=(const ISource &) = delete;
 
     virtual void start();
     virtual void stop();

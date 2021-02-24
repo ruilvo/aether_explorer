@@ -21,6 +21,8 @@ class SourceManagerWidget : public QWidget
   public:
     SourceManagerWidget() = delete;
     SourceManagerWidget(SourceManager *manager);
+    SourceManagerWidget(const SourceManagerWidget &) = delete;
+    SourceManagerWidget &operator=(const SourceManagerWidget &) = delete;
     ~SourceManagerWidget() override = default;
 
   private:

@@ -25,6 +25,8 @@ class SourceManager
     SourceManager(SourceFactory &&sourceFactory,
                   SourceListenersCollection &&listenersCollection);
     SourceManager() = delete;
+    SourceManager(const SourceManager &) = delete;
+    SourceManager &operator=(const SourceManager &) = delete;
     ~SourceManager() = default;
 
     ISource *getSource();
