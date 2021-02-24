@@ -77,3 +77,6 @@ if(NOT Qt6_FOUND)
     COMPONENTS ${AETHER_QT_REQUIRED_COMPONENTS}
     REQUIRED)
 endif()
+
+# Actual source files
+add_subdirectory("src")
