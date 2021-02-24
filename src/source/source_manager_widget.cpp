@@ -42,6 +42,11 @@ SourceManagerWidget::SourceManagerWidget(SourceManager *manager)
             &SourceManagerWidget::sourcesAvailableComboBoxTextChanged);
     connect(centreFrequencySpinBox_, &QDoubleSpinBox::valueChanged, this,
             &SourceManagerWidget::centreFrequencySpinBoxValueChanged);
+
+    if (sourcesAvailableComboBox_->count() > 0)
+    {
+        sourcesAvailableComboBox_->setCurrentIndex(0);
+    }
 };
 
 void SourceManagerWidget::startStopPushButtonToggled(bool checked)
@@ -52,6 +57,9 @@ void SourceManagerWidget::startStopPushButtonToggled(bool checked)
         if (checked && source)
         {
             source->start();
+            centreFrequencySpinBox_->blockSignals(true);
+            centreFrequencySpinBox_->setValue(source->getCentreFrequency());
+            centreFrequencySpinBox_->blockSignals(false);
         }
         else if (!checked && source)
         {
