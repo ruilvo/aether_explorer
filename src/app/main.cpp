@@ -6,7 +6,9 @@
  * Consult LICENSE.txt for detailed licensing information
  */
 
-#include "source_manager_widget.hpp"
+#include "source_factory.hpp"
+#include "source_listeners_collection.hpp"
+#include "source_manager.hpp"
 
 #include <QApplication>
 
@@ -14,9 +16,21 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    auto widget = SourceManagerWidget(nullptr);
+    auto listenersCollection = SourceListenersCollection();
+    /*
+     * Now initialize the listeners...
+     */
 
-    widget.show();
+    auto sourceFactory = SourceFactory();
+    /*
+     * Now register sources...
+     */
+
+    auto sourceManager =
+        SourceManager(std::move(sourceFactory), std::move(listenersCollection));
+
+    // In the future this would be part of a larger main Window, of course...
+    sourceManager.getWidget()->show();
 
     return app.exec();
 }
