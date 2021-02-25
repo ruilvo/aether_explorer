@@ -12,6 +12,7 @@
 #include <QDoubleSpinBox>
 #include <QPushButton>
 #include <QString>
+#include <QVBoxLayout>
 #include <QWidget>
 
 class SourceManager;
@@ -30,6 +31,7 @@ class SourceManagerWidget : public QWidget
     QComboBox *sourcesAvailableComboBox_;
     QDoubleSpinBox *centreFrequencySpinBox_;
     QPushButton *startStopPushButton_;
+    QVBoxLayout *layout_;
   private slots:
     void sourcesAvailableComboBoxTextChanged(const QString &text);
     void centreFrequencySpinBoxValueChanged(double d);

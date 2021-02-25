@@ -10,22 +10,25 @@
 
 #include "source_manager.hpp"
 
+#include <QFormLayout>
 #include <QStringList>
-#include <QVBoxLayout>
 
 SourceManagerWidget::SourceManagerWidget(SourceManager *manager)
     : QWidget(nullptr), manager_(manager), sourcesAvailableComboBox_(new QComboBox(this)),
       centreFrequencySpinBox_(new QDoubleSpinBox(this)),
-      startStopPushButton_(new QPushButton(this))
+      startStopPushButton_(new QPushButton(this)), layout_(new QVBoxLayout(this))
 {
     startStopPushButton_->setCheckable(true);
     startStopPushButton_->setText("Start");
 
-    auto *layout = new QVBoxLayout(this);
+    layout_->addWidget(startStopPushButton_);
 
-    layout->addWidget(startStopPushButton_);
-    layout->addWidget(sourcesAvailableComboBox_);
-    layout->addWidget(centreFrequencySpinBox_);
+    auto *formLayout = new QFormLayout();
+
+    formLayout->addRow("Source", sourcesAvailableComboBox_);
+    formLayout->addRow("Centre freq.", centreFrequencySpinBox_);
+
+    layout_->addLayout(formLayout);
 
     if (manager_)
     {
@@ -67,13 +70,24 @@ void SourceManagerWidget::startStopPushButtonToggled(bool checked)
         }
     }
     sourcesAvailableComboBox_->setEnabled(!checked);
+    startStopPushButton_->setText(checked ? "Stop" : "Start");
 }
 
 void SourceManagerWidget::sourcesAvailableComboBoxTextChanged(const QString &text)
 {
     if (manager_)
     {
+        auto *source = manager_->getSource();
+        if (source)
+        {
+            layout_->removeWidget(source->getWidget());
+        }
         manager_->setSource(text.toStdString());
+        source = manager_->getSource();
+        if (source)
+        {
+            layout_->addWidget(source->getWidget());
+        }
     }
 }
 
