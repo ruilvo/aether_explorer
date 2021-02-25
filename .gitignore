@@ -694,9 +694,7 @@ tags
 [._]*.un~
 
 ### VisualStudioCode ###
-.vscode/*
-!.vscode/tasks.json
-!.vscode/launch.json
+.vscode/
 *.code-workspace
 
 ### VisualStudioCode Patch ###
