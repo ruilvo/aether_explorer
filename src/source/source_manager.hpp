@@ -37,7 +37,7 @@ class SourceManager
 
   private:
     std::unique_ptr<ISource> currentSource_;
-    std::unique_ptr<SourceManagerWidget> widget_;
     SourceFactory sourceFactory_;
     SourceListenersCollection listenersCollection_;
+    std::unique_ptr<SourceManagerWidget> widget_;
 };

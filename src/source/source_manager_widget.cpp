@@ -32,10 +32,14 @@ SourceManagerWidget::SourceManagerWidget(SourceManager *manager)
 
     if (manager_)
     {
-        auto sourcesAvailable = manager_->getSourceFactory()->getNames();
-        for (const auto &sourceName : sourcesAvailable)
+        auto sourceFactory = manager_->getSourceFactory();
+        if (sourceFactory)
         {
-            sourcesAvailableComboBox_->addItem(QString::fromStdString(sourceName));
+            auto sourcesAvailable = sourceFactory->getNames();
+            for (const auto &sourceName : sourcesAvailable)
+            {
+                sourcesAvailableComboBox_->addItem(QString::fromStdString(sourceName));
+            }
         }
     }
 
