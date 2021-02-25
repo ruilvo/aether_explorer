@@ -8,9 +8,6 @@
 
 #include "soapysdr_radio.hpp"
 
-#include "ISource.hpp"
-#include "qwidget.h"
-
 #include <QDebug>
 #include <QVersionNumber>
 
