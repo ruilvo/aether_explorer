@@ -6,7 +6,7 @@
  * Consult LICENSE.txt for detailed licensing information
  */
 
-#include "soapysdr_source.hpp"
+#include "soapysdr_radio.hpp"
 
 #include "ISource.hpp"
 #include "qwidget.h"
@@ -14,14 +14,16 @@
 #include <QDebug>
 #include <QVersionNumber>
 
-SoapySdrSource::SoapySdrSource()
+#include <memory>
+
+SoapySdrRadio::SoapySdrRadio()
     : ndevices_(0), devicesFound_(nullptr), sdr_(nullptr), numChannels_(0), channel_(0),
       centreFrequency_(0), sampleRate_(0), bandwidth_(0), agcAvailable_(false),
-      agc_(false), globalGain_(0), worker_(nullptr), initialised_(false), running_(false),
-      widget_(std::unique_ptr<SoapySdrWidget>(nullptr)), library_(SOAPY_LIBRARY_NAME)
-{
-    initialised_ = initialiseLibrary();
+      agc_(false), globalGain_(0), worker_(nullptr), running_(false),
+      library_(SOAPY_LIBRARY_NAME), initialised_(initialiseLibrary()),
+      widget_(std::unique_ptr<SoapySdrWidget>(nullptr))
 
+{
     if (!initialised_)
     {
         return;
@@ -38,10 +40,15 @@ SoapySdrSource::SoapySdrSource()
 
     widget_ = std::make_unique<SoapySdrWidget>(this);
 
-    open();
+    enumerateDevices();
+
+    nameDevices();
+    makeDeviceStrings();
+
+    widget_->deviceOpened();
 };
 
-SoapySdrSource::~SoapySdrSource()
+SoapySdrRadio::~SoapySdrRadio()
 {
     stop();
 
@@ -51,14 +58,9 @@ SoapySdrSource::~SoapySdrSource()
     }
 }
 
-void SoapySdrSource::start()
+void SoapySdrRadio::start()
 {
     if (!initialised_)
-    {
-        return;
-    }
-
-    if (!sdr_)
     {
         return;
     }
@@ -87,7 +89,7 @@ void SoapySdrSource::start()
     widget_->deviceStarted();
 }
 
-void SoapySdrSource::stop()
+void SoapySdrRadio::stop()
 {
     if (!initialised_)
     {
@@ -105,12 +107,12 @@ void SoapySdrSource::stop()
     widget_->deviceStopped();
 }
 
-double SoapySdrSource::getCentreFrequency()
+double SoapySdrRadio::getCentreFrequency()
 {
     return centreFrequency_;
 }
 
-void SoapySdrSource::setCentreFrequency(double centreFrequency)
+void SoapySdrRadio::setCentreFrequency(double centreFrequency)
 {
     if (!initialised_)
     {
@@ -137,64 +139,49 @@ void SoapySdrSource::setCentreFrequency(double centreFrequency)
     }
 }
 
-double SoapySdrSource::getSampleRate()
+double SoapySdrRadio::getSampleRate()
 {
     return sampleRate_;
 }
 
-QWidget *SoapySdrSource::getWidget()
+QWidget *SoapySdrRadio::getWidget()
 {
     return static_cast<QWidget *>(widget_.get());
 }
 
-void SoapySdrSource::open()
-{
-    if (!initialised_)
-    {
-        return;
-    }
-
-    enumerateDevices();
-
-    nameDevices();
-    makeDeviceStrings();
-
-    widget_->deviceOpened();
-}
-
-std::vector<QString> SoapySdrSource::getDeviceStrings()
+std::vector<QString> SoapySdrRadio::getDeviceStrings()
 {
     return deviceStrings_;
 }
 
-std::vector<QString> SoapySdrSource::getDeviceNames()
+std::vector<QString> SoapySdrRadio::getDeviceNames()
 {
     return deviceNames_;
 }
 
-QString SoapySdrSource::getDeviceString()
+QString SoapySdrRadio::getDeviceString()
 {
     return deviceString_;
 }
 
-void SoapySdrSource::setDeviceString(const QString &sourceString)
+void SoapySdrRadio::setDeviceString(const QString &sourceString)
 {
     deviceString_ = sourceString;
 
     resetParameters();
 }
 
-size_t SoapySdrSource::getChannelCount()
+size_t SoapySdrRadio::getChannelCount()
 {
     return numChannels_;
 }
 
-size_t SoapySdrSource::getChannel()
+size_t SoapySdrRadio::getChannel()
 {
     return channel_;
 }
 
-void SoapySdrSource::setChannel(size_t channel)
+void SoapySdrRadio::setChannel(size_t channel)
 {
     if (!initialised_)
     {
@@ -209,17 +196,17 @@ void SoapySdrSource::setChannel(size_t channel)
     channel_ = channel;
 }
 
-std::vector<QString> SoapySdrSource::getSupportedAntennas()
+std::vector<QString> SoapySdrRadio::getSupportedAntennas()
 {
     return availableAntennas_;
 }
 
-QString SoapySdrSource::getAntenna()
+QString SoapySdrRadio::getAntenna()
 {
     return antenna_;
 }
 
-void SoapySdrSource::setAntenna(QString antenna)
+void SoapySdrRadio::setAntenna(QString antenna)
 {
     if (!initialised_)
     {
@@ -246,17 +233,17 @@ void SoapySdrSource::setAntenna(QString antenna)
     }
 }
 
-std::vector<double> SoapySdrSource::getSupportedSampleRatesDiscrete()
+std::vector<double> SoapySdrRadio::getSupportedSampleRatesDiscrete()
 {
     return supportedSampleRatesDiscrete_;
 }
 
-std::vector<SoapySDRRange> SoapySdrSource::getSupportedSampleRatesRanges()
+std::vector<SoapySDRRange> SoapySdrRadio::getSupportedSampleRatesRanges()
 {
     return supportedBandwidthsRanges_;
 }
 
-void SoapySdrSource::setSampleRate(double sampleRate)
+void SoapySdrRadio::setSampleRate(double sampleRate)
 {
     if (!initialised_)
     {
@@ -277,22 +264,22 @@ void SoapySdrSource::setSampleRate(double sampleRate)
     }
 }
 
-std::vector<double> SoapySdrSource::getSupportedBandwidthsDiscrete()
+std::vector<double> SoapySdrRadio::getSupportedBandwidthsDiscrete()
 {
     return supportedBandwidthsDiscrete_;
 }
 
-std::vector<SoapySDRRange> SoapySdrSource::getSupportedBandwidthsRanges()
+std::vector<SoapySDRRange> SoapySdrRadio::getSupportedBandwidthsRanges()
 {
     return supportedBandwidthsRanges_;
 }
 
-double SoapySdrSource::getBandwidth()
+double SoapySdrRadio::getBandwidth()
 {
     return bandwidth_;
 }
 
-void SoapySdrSource::setBandwidth(double bandwidth)
+void SoapySdrRadio::setBandwidth(double bandwidth)
 {
     if (!initialised_)
     {
@@ -318,12 +305,12 @@ void SoapySdrSource::setBandwidth(double bandwidth)
     }
 }
 
-bool SoapySdrSource::hasAgc()
+bool SoapySdrRadio::hasAgc()
 {
     return agcAvailable_;
 }
 
-bool SoapySdrSource::getAgc()
+bool SoapySdrRadio::getAgc()
 {
     if (!initialised_)
     {
@@ -338,7 +325,7 @@ bool SoapySdrSource::getAgc()
     return agc_;
 }
 
-void SoapySdrSource::setAgc(bool state)
+void SoapySdrRadio::setAgc(bool state)
 {
     if (!initialised_)
     {
@@ -363,17 +350,17 @@ void SoapySdrSource::setAgc(bool state)
     }
 }
 
-SoapySDRRange SoapySdrSource::getGlobalGainRange()
+SoapySDRRange SoapySdrRadio::getGlobalGainRange()
 {
     return globalGainRange_;
 }
 
-double SoapySdrSource::getGlobalGain()
+double SoapySdrRadio::getGlobalGain()
 {
     return globalGain_;
 }
 
-void SoapySdrSource::setGlobalGain(double gain)
+void SoapySdrRadio::setGlobalGain(double gain)
 {
     if (!initialised_)
     {
@@ -405,22 +392,22 @@ void SoapySdrSource::setGlobalGain(double gain)
     }
 }
 
-std::vector<QString> SoapySdrSource::getSpecificGainNames()
+std::vector<QString> SoapySdrRadio::getSpecificGainNames()
 {
     return specificGainNames_;
 }
 
-std::vector<SoapySDRRange> SoapySdrSource::getSpecificGainRanges()
+std::vector<SoapySDRRange> SoapySdrRadio::getSpecificGainRanges()
 {
     return specificGainRanges_;
 }
 
-std::vector<double> SoapySdrSource::getSpecificGains()
+std::vector<double> SoapySdrRadio::getSpecificGains()
 {
     return specificGains_;
 }
 
-void SoapySdrSource::setSpecificGain(QString name, double value)
+void SoapySdrRadio::setSpecificGain(QString name, double value)
 {
     if (!initialised_)
     {
@@ -454,13 +441,13 @@ void SoapySdrSource::setSpecificGain(QString name, double value)
     }
 }
 
-void SoapySdrSource::resetParameters()
+void SoapySdrRadio::resetParameters()
 {
     centreFrequency_ = SOAPY_INITIAL_CENTRE_FREQUENCY;
     sampleRate_ = SOAPY_INITIAL_SAMPLE_RATE;
 }
 
-void SoapySdrSource::enumerateDevices()
+void SoapySdrRadio::enumerateDevices()
 {
     if (!initialised_)
     {
@@ -470,7 +457,7 @@ void SoapySdrSource::enumerateDevices()
     devicesFound_ = SoapySDRDevice_enumerate(nullptr, &ndevices_);
 }
 
-void SoapySdrSource::nameDevices()
+void SoapySdrRadio::nameDevices()
 {
     deviceNames_.clear();
 
@@ -487,7 +474,7 @@ void SoapySdrSource::nameDevices()
     }
 }
 
-void SoapySdrSource::makeDeviceStrings()
+void SoapySdrRadio::makeDeviceStrings()
 {
     deviceStrings_.clear();
 
@@ -504,7 +491,7 @@ void SoapySdrSource::makeDeviceStrings()
     }
 }
 
-bool SoapySdrSource::makeDevice()
+bool SoapySdrRadio::makeDevice()
 {
     if (!initialised_)
     {
@@ -527,7 +514,7 @@ bool SoapySdrSource::makeDevice()
     return true;
 }
 
-bool SoapySdrSource::unmakeDevice()
+bool SoapySdrRadio::unmakeDevice()
 {
     if (!initialised_)
     {
@@ -549,7 +536,7 @@ bool SoapySdrSource::unmakeDevice()
     return true;
 }
 
-void SoapySdrSource::getNumAvailableChannels()
+void SoapySdrRadio::getNumAvailableChannels()
 {
     if (!initialised_)
     {
@@ -564,7 +551,7 @@ void SoapySdrSource::getNumAvailableChannels()
     numChannels_ = SoapySDRDevice_getNumChannels(sdr_, SOAPY_SDR_RX);
 }
 
-void SoapySdrSource::getAvailableAntennas()
+void SoapySdrRadio::getAvailableAntennas()
 {
     if (!initialised_)
     {
@@ -588,12 +575,12 @@ void SoapySdrSource::getAvailableAntennas()
     antenna_ = QString{SoapySDRDevice_getAntenna(sdr_, SOAPY_SDR_RX, channel_)};
 }
 
-void SoapySdrSource::initCentreFrequency()
+void SoapySdrRadio::initCentreFrequency()
 {
     setCentreFrequency(SOAPY_INITIAL_CENTRE_FREQUENCY);
 }
 
-bool SoapySdrSource::validateSampleRate(double sampleRate)
+bool SoapySdrRadio::validateSampleRate(double sampleRate)
 {
     if (std::find(supportedSampleRatesDiscrete_.begin(),
                   supportedSampleRatesDiscrete_.end(),
@@ -624,7 +611,7 @@ bool SoapySdrSource::validateSampleRate(double sampleRate)
     return false;
 }
 
-void SoapySdrSource::getAvailableSampleRates()
+void SoapySdrRadio::getAvailableSampleRates()
 {
     if (!initialised_)
     {
@@ -671,7 +658,7 @@ void SoapySdrSource::getAvailableSampleRates()
     }
 }
 
-void SoapySdrSource::setDeviceSampleRate()
+void SoapySdrRadio::setDeviceSampleRate()
 {
     if (!initialised_)
     {
@@ -693,7 +680,7 @@ void SoapySdrSource::setDeviceSampleRate()
     recomputeBandwidth();
 }
 
-bool SoapySdrSource::validateBandwidth(double bandwidth)
+bool SoapySdrRadio::validateBandwidth(double bandwidth)
 {
     if (std::find(supportedBandwidthsDiscrete_.begin(),
                   supportedBandwidthsDiscrete_.end(),
@@ -717,7 +704,7 @@ bool SoapySdrSource::validateBandwidth(double bandwidth)
     return false;
 }
 
-void SoapySdrSource::getAvailableBandwidths()
+void SoapySdrRadio::getAvailableBandwidths()
 {
     if (!initialised_)
     {
@@ -750,7 +737,7 @@ void SoapySdrSource::getAvailableBandwidths()
     bandwidth_ = SoapySDRDevice_getBandwidth(sdr_, SOAPY_SDR_RX, channel_);
 }
 
-void SoapySdrSource::recomputeBandwidth()
+void SoapySdrRadio::recomputeBandwidth()
 {
     auto currSampleRate = getSampleRate();
 
@@ -788,7 +775,7 @@ void SoapySdrSource::recomputeBandwidth()
     }
 }
 
-void SoapySdrSource::getAgcAvailability()
+void SoapySdrRadio::getAgcAvailability()
 {
     if (!initialised_)
     {
@@ -805,7 +792,7 @@ void SoapySdrSource::getAgcAvailability()
     agc_ = SoapySDRDevice_getGainMode(sdr_, SOAPY_SDR_RX, channel_);
 }
 
-void SoapySdrSource::getAvailableGlobalGainRange()
+void SoapySdrRadio::getAvailableGlobalGainRange()
 {
     if (!initialised_)
     {
@@ -822,7 +809,7 @@ void SoapySdrSource::getAvailableGlobalGainRange()
     globalGain_ = SoapySDRDevice_getGain(sdr_, SOAPY_SDR_RX, channel_);
 }
 
-void SoapySdrSource::getAvailableSeparateGainsRanges()
+void SoapySdrRadio::getAvailableSeparateGainsRanges()
 {
     if (!initialised_)
     {
@@ -849,7 +836,7 @@ void SoapySdrSource::getAvailableSeparateGainsRanges()
             sdr_, SOAPY_SDR_RX, channel_, specificGainNames_[j].toLocal8Bit()));
     }
 
-    specificGainRanges_.clear();
+    specificGains_.clear();
     for (auto j = 0u; j < specificGainNames_.size(); j++)
     {
         specificGains_.push_back(SoapySDRDevice_getGainElement(
@@ -857,7 +844,7 @@ void SoapySdrSource::getAvailableSeparateGainsRanges()
     }
 }
 
-void SoapySdrSource::worker()
+void SoapySdrRadio::worker()
 {
     size_t channelList[1] = {channel_};
     auto rxStream = SoapySDRDevice_setupStream(sdr_, SOAPY_SDR_RX, SOAPY_SDR_CF32,
@@ -928,14 +915,14 @@ void SoapySdrSource::worker()
     }
 }
 
-void SoapySdrSource::startWorker()
+void SoapySdrRadio::startWorker()
 {
     running_ = true;
 
-    worker_ = new std::thread(&SoapySdrSource::worker, this);
+    worker_ = new std::thread(&SoapySdrRadio::worker, this);
 }
 
-void SoapySdrSource::stopWorker()
+void SoapySdrRadio::stopWorker()
 {
     running_ = false;
 
@@ -948,7 +935,7 @@ void SoapySdrSource::stopWorker()
     worker_ = nullptr;
 }
 
-bool SoapySdrSource::initialiseLibrary()
+bool SoapySdrRadio::initialiseLibrary()
 {
     SoapySDR_getAPIVersion =
         (SoapySDR_getAPIVersion_t)library_.resolve("SoapySDR_getAPIVersion");

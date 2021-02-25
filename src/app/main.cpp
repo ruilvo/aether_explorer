@@ -7,7 +7,7 @@
  */
 
 #include "ISource.hpp"
-#include "soapysdr_source.hpp"
+#include "soapysdr_radio.hpp"
 #include "source_factory.hpp"
 #include "source_listeners_collection.hpp"
 #include "source_manager.hpp"
@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
     /*
      * Now register sources...
      */
-    sourceFactory.registerSouce(
-        "SoapySDR", []() { return std::unique_ptr<ISource>(new SoapySdrSource()); });
+    sourceFactory.registerSouce("SoapySDR",
+                                []() { return std::make_unique<SoapySdrRadio>(); });
 
     auto sourceManager =
         SourceManager(std::move(sourceFactory), std::move(listenersCollection));

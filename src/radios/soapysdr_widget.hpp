@@ -19,13 +19,13 @@
 
 #include <vector>
 
-class SoapySdrSource;
+class SoapySdrRadio;
 
 class SoapySdrWidget : public QWidget
 {
   public:
     SoapySdrWidget() = delete;
-    SoapySdrWidget(SoapySdrSource *source);
+    SoapySdrWidget(SoapySdrRadio *radio);
     ~SoapySdrWidget() override = default;
 
     void deviceOpened();
@@ -50,13 +50,12 @@ class SoapySdrWidget : public QWidget
 
     bool running_;
     int deviceCustomIdx_;
-    int deviceRefreshIdx_;
     int sampleRateCustomIdx_;
     int bandwidthCustomIdx_;
 
     QFormLayout *layout_;
 
-    SoapySdrSource *source_;
+    SoapySdrRadio *radio_;
     QComboBox *deviceCombo_;
     QLineEdit *deviceLineEdit_;
 

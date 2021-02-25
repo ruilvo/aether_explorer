@@ -22,8 +22,8 @@
 #define SOAPY_LIBRARY_NAME "SoapySDR"
 #define SOAPY_SDR_RX 1
 #define SOAPY_SDR_CF32 "CF32"
-#define SOAPY_INITIAL_CENTRE_FREQUENCY 100000000.0
-#define SOAPY_INITIAL_SAMPLE_RATE 2000000.0
+#define SOAPY_INITIAL_CENTRE_FREQUENCY 100'000'000.0
+#define SOAPY_INITIAL_SAMPLE_RATE 2'000'000.0
 #define SOAPY_FRAME_TIMEOUT 500000
 
 typedef struct
@@ -138,13 +138,13 @@ typedef size_t (*SoapySDRDevice_getStreamMTU_t)(const SoapySDRDevice *device,
                                                 SoapySDRStream *stream);
 typedef const char *(*SoapySDR_errToStr_t)(const int errorCode);
 
-class SoapySdrSource : public ISource
+class SoapySdrRadio : public ISource
 {
   public:
-    SoapySdrSource();
-    ~SoapySdrSource() override;
-    SoapySdrSource(const SoapySdrSource &) = delete;
-    SoapySdrSource &operator=(const SoapySdrSource &) = delete;
+    SoapySdrRadio();
+    ~SoapySdrRadio() override;
+    SoapySdrRadio(const SoapySdrRadio &) = delete;
+    SoapySdrRadio &operator=(const SoapySdrRadio &) = delete;
 
     // From ISource
     void start() override;
@@ -156,9 +156,6 @@ class SoapySdrSource : public ISource
 
     QWidget *getWidget() override;
     // --------------
-
-    // Other functions
-    void open();
 
     // Devices
     std::vector<QString> getDeviceStrings();
@@ -274,15 +271,15 @@ class SoapySdrSource : public ISource
     void stopWorker();
 
     // Control variables
-    bool initialised_;
     bool running_;
-
-    // Qt Widget
-    std::unique_ptr<SoapySdrWidget> widget_;
 
     // Runtime library
     QLibrary library_;
+    bool initialised_;
     bool initialiseLibrary();
+
+    // Qt Widget
+    std::unique_ptr<SoapySdrWidget> widget_;
 
     SoapySDR_getAPIVersion_t SoapySDR_getAPIVersion;
     SoapySDRDevice_enumerate_t SoapySDRDevice_enumerate;

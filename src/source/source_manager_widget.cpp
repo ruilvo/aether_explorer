@@ -80,7 +80,6 @@ void SourceManagerWidget::startStopPushButtonToggled(bool checked)
 
 void SourceManagerWidget::sourcesAvailableComboBoxTextChanged(const QString &text)
 {
-    qDebug() << "Sources combo manager";
     if (manager_)
     {
         auto *source = manager_->getSource();
