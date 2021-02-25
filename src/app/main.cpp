@@ -6,6 +6,8 @@
  * Consult LICENSE.txt for detailed licensing information
  */
 
+#include "ISource.hpp"
+#include "soapysdr_source.hpp"
 #include "source_factory.hpp"
 #include "source_listeners_collection.hpp"
 #include "source_manager.hpp"
@@ -25,6 +27,8 @@ int main(int argc, char *argv[])
     /*
      * Now register sources...
      */
+    sourceFactory.registerSouce(
+        "SoapySDR", []() { return std::unique_ptr<ISource>(new SoapySdrSource()); });
 
     auto sourceManager =
         SourceManager(std::move(sourceFactory), std::move(listenersCollection));

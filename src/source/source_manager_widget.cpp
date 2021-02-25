@@ -10,6 +10,7 @@
 
 #include "source_manager.hpp"
 
+#include <QDebug>
 #include <QFormLayout>
 #include <QStringList>
 
@@ -52,7 +53,7 @@ SourceManagerWidget::SourceManagerWidget(SourceManager *manager)
 
     if (sourcesAvailableComboBox_->count() > 0)
     {
-        sourcesAvailableComboBox_->setCurrentIndex(0);
+        sourcesAvailableComboBoxTextChanged(sourcesAvailableComboBox_->currentText());
     }
 };
 
@@ -79,6 +80,7 @@ void SourceManagerWidget::startStopPushButtonToggled(bool checked)
 
 void SourceManagerWidget::sourcesAvailableComboBoxTextChanged(const QString &text)
 {
+    qDebug() << "Sources combo manager";
     if (manager_)
     {
         auto *source = manager_->getSource();

@@ -33,11 +33,12 @@ class SourceManager
     void setSource(const std::string &sourceName);
     QWidget *getWidget();
     SourceFactory *getSourceFactory();
-    std::vector<ISourceListener *> getSourceListeners();
 
   private:
     std::unique_ptr<ISource> currentSource_;
     SourceFactory sourceFactory_;
     SourceListenersCollection listenersCollection_;
     std::unique_ptr<SourceManagerWidget> widget_;
+
+    std::vector<ISourceListener *> getSourceListeners();
 };

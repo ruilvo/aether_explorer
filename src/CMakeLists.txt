@@ -5,4 +5,5 @@
 # Consult LICENSE.txt for detailed licensing information
 
 add_subdirectory("source")
+add_subdirectory("radios")
 add_subdirectory("app")

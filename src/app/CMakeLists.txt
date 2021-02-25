@@ -5,5 +5,5 @@
 # Consult LICENSE.txt for detailed licensing information
 
 add_executable(app "main.cpp")
-target_link_libraries(app PRIVATE Qt::Core Qt::Widgets source)
+target_link_libraries(app PUBLIC Qt::Core Qt::Widgets source radios)
 run_windeployqt(app)

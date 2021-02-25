@@ -24,6 +24,10 @@ void SourceManager::setSource(const std::string &sourceName)
 {
     currentSource_.reset();
     currentSource_ = sourceFactory_.createSource(sourceName);
+    if (currentSource_.get())
+    {
+        currentSource_->setListeners(getSourceListeners());
+    }
 }
 
 QWidget *SourceManager::getWidget()
