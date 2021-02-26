@@ -32,7 +32,7 @@ class SourceManagerWidget : public QWidget
     QDoubleSpinBox *centreFrequencySpinBox_;
     QPushButton *startStopPushButton_;
     QVBoxLayout *layout_;
-  private slots:
+  private slots: // NOLINT(readability-redundant-access-specifiers)
     void sourcesAvailableComboBoxTextChanged(const QString &text);
     void centreFrequencySpinBoxValueChanged(double d);
     void startStopPushButtonToggled(bool checked);

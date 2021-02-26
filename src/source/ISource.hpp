@@ -34,5 +34,6 @@ class ISource
     void setListeners(std::vector<ISourceListener *> listeners);
 
   protected:
+    // NOLINTNEXTLINE: protected members aren't that evil
     std::vector<ISourceListener *> listeners_;
 };

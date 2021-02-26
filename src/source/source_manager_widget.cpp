@@ -39,10 +39,10 @@ SourceManagerWidget::SourceManagerWidget(SourceManager *manager)
 
     layout_->addLayout(formLayout);
 
-    if (manager_)
+    if (manager_ != nullptr)
     {
-        auto sourceFactory = manager_->getSourceFactory();
-        if (sourceFactory)
+        auto *sourceFactory = manager_->getSourceFactory();
+        if (sourceFactory != nullptr)
         {
             auto sourcesAvailable = sourceFactory->getNames();
             for (const auto &sourceName : sourcesAvailable)
@@ -67,17 +67,17 @@ SourceManagerWidget::SourceManagerWidget(SourceManager *manager)
 
 void SourceManagerWidget::startStopPushButtonToggled(bool checked)
 {
-    if (manager_)
+    if (manager_ != nullptr)
     {
         auto *source = manager_->getSource();
-        if (checked && source)
+        if (checked && (source != nullptr))
         {
             source->start();
             centreFrequencySpinBox_->blockSignals(true);
             centreFrequencySpinBox_->setValue(source->getCentreFrequency());
             centreFrequencySpinBox_->blockSignals(false);
         }
-        else if (!checked && source)
+        else if (!checked && (source != nullptr))
         {
             source->stop();
         }
@@ -88,16 +88,16 @@ void SourceManagerWidget::startStopPushButtonToggled(bool checked)
 
 void SourceManagerWidget::sourcesAvailableComboBoxTextChanged(const QString &text)
 {
-    if (manager_)
+    if (manager_ != nullptr)
     {
         auto *source = manager_->getSource();
-        if (source)
+        if (source != nullptr)
         {
             layout_->removeWidget(source->getWidget());
         }
         manager_->setSource(text.toStdString());
         source = manager_->getSource();
-        if (source)
+        if (source != nullptr)
         {
             layout_->addWidget(source->getWidget());
         }
@@ -106,10 +106,10 @@ void SourceManagerWidget::sourcesAvailableComboBoxTextChanged(const QString &tex
 
 void SourceManagerWidget::centreFrequencySpinBoxValueChanged(double d)
 {
-    if (manager_)
+    if (manager_ != nullptr)
     {
         auto *source = manager_->getSource();
-        if (source)
+        if (source != nullptr)
         {
             source->setCentreFrequency(d);
         }

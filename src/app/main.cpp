@@ -36,5 +36,5 @@ int main(int argc, char *argv[])
     // In the future this would be part of a larger main Window, of course...
     sourceManager.getWidget()->show();
 
-    return app.exec();
+    return QApplication::exec();
 }
