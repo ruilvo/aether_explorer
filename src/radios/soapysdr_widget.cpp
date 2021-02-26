@@ -131,7 +131,7 @@ SoapySdrWidget::SoapySdrWidget(SoapySdrRadio *radio)
     bandwidthBox_->setMinimum(0);
     bandwidthBox_->setMaximum(500'000'000.00); // NOLINT(readability-magic-numbers)
     bandwidthBox_->setDecimals(2);
-    bandwidthBox_->setSuffix(" Sa/s");
+    bandwidthBox_->setSuffix(" Hz");
     bandwidthBox_->setGroupSeparatorShown(true);
     bandwidthBox_->setKeyboardTracking(false);
 
