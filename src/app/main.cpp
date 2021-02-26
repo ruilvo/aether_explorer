@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     /*
      * Now register sources...
      */
-    sourceFactory.registerSouce("SoapySDR",
+    sourceFactory.registerSource("SoapySDR",
                                 []() { return std::make_unique<SoapySdrRadio>(); });
 
     auto sourceManager =

@@ -30,7 +30,7 @@ std::vector<std::string> SourceFactory::getNames()
     return names;
 }
 
-void SourceFactory::registerSouce(const std::string &sourceName,
+void SourceFactory::registerSource(const std::string &sourceName,
                                   std::function<std::unique_ptr<ISource>(void)> creator)
 {
     sourcesAvailable_[sourceName] = std::move(creator);

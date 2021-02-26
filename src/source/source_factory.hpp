@@ -27,7 +27,7 @@ class SourceFactory
 
     std::unique_ptr<ISource> createSource(const std::string &sourceName);
     std::vector<std::string> getNames();
-    void registerSouce(const std::string &sourceName,
+    void registerSource(const std::string &sourceName,
                        std::function<std::unique_ptr<ISource>(void)> creator);
 
   private:
