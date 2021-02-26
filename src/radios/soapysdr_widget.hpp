@@ -28,55 +28,5 @@ class SoapySdrWidget : public QWidget
     SoapySdrWidget(SoapySdrRadio *radio);
     ~SoapySdrWidget() override = default;
 
-    void deviceOpened();
-    void deviceStarted();
-    void deviceStopped();
 
-  private:
-    void configureControls();
-    void reconfigureBandwidthCombo();
-
-    void configureChannel();
-    void configureAntenna();
-    void configureSampleRate();
-    void configureBandwidth();
-    void configureAgc();
-    void configureUnifiedGain();
-    void updateUnifiedGain();
-    void configureSeparateGains();
-    void updateSeparateGains();
-    void updateAgc();
-    QString convertToUnits(double l_nvalue, QString suffix);
-
-    bool running_;
-    int deviceCustomIdx_;
-    int sampleRateCustomIdx_;
-    int bandwidthCustomIdx_;
-
-    QFormLayout *layout_;
-
-    SoapySdrRadio *radio_;
-    QComboBox *deviceCombo_;
-    QLineEdit *deviceLineEdit_;
-
-    QComboBox *channelCombo_;
-
-    QComboBox *antennaCombo_;
-
-    QComboBox *sampleRateCombo_;
-    QDoubleSpinBox *sampleRateBox_;
-
-    QComboBox *bandwidthCombo_;
-    QDoubleSpinBox *bandwidthBox_;
-
-    QCheckBox *agcBox_;
-    QSlider *unifiedGainSlider_;
-    std::vector<QSlider *> separateGainSliders_;
-
-  public slots:
-    void handleCombo(int value);
-    void handleCheck(bool checked);
-    void handleSlider(int value);
-    void handleSpinBox(double value);
-    void handleLineEdit(const QString &value);
 };
