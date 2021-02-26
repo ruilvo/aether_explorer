@@ -41,7 +41,10 @@ class SoapySdrRadio : public ISource
   public:
     void makeDevice(const QString &sourceString);
     void unmakeDevice();
-    std::map<QString, QString> getDeviceStrings();
+    [[nodiscard]] std::map<QString, QString> getDeviceStrings() const
+    {
+        return deviceStrings_;
+    };
 
     // Acquisition -----------------------------------------------------------------------
   private:
@@ -84,7 +87,7 @@ class SoapySdrRadio : public ISource
     {
         return antenna_;
     };
-    void setAntenna(QString &antenna);
+    void setAntenna(const QString &antenna);
 
     // Frequency -------------------------------------------------------------------------
   private:

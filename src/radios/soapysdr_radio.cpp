@@ -74,6 +74,13 @@ void SoapySdrRadio::discoverDevices()
     devicesFound_.clear();
     devicesFound_.assign(devs_found, devs_found + ndevs);
 
+    deviceStrings_.clear();
+    for (const auto &devf : devicesFound_)
+    {
+        deviceStrings_[QString::fromLocal8Bit(SoapySDRKwargs_get(&devf, "label"))] =
+            QString::fromLocal8Bit(SoapySDRKwargs_toString(&devf));
+    }
+
     SoapySDRKwargsList_clear(devs_found, ndevs);
 
     widget_->devicesDiscovered();
@@ -184,8 +191,6 @@ void SoapySdrRadio::readDevice()
         }
     }
 
-    readjustBandwidth();
-
     // AGC
     agcAvailable_ = SoapySDRDevice_hasGainMode(sdr_, SOAPY_SDR_RX, channel_);
     agc_ = SoapySDRDevice_getGainMode(sdr_, SOAPY_SDR_RX, channel_);
@@ -209,6 +214,8 @@ void SoapySdrRadio::readDevice()
     }
 
     widget_->deviceRead();
+
+    readjustBandwidth();
 }
 
 void SoapySdrRadio::makeDevice(const QString &sourceString)
@@ -429,7 +436,7 @@ void SoapySdrRadio::setChannel(size_t channel)
     channel_ = channel;
 }
 
-void SoapySdrRadio::setAntenna(QString &antenna)
+void SoapySdrRadio::setAntenna(const QString &antenna)
 {
     if (!initialised_)
     {
@@ -586,6 +593,8 @@ void SoapySdrRadio::readjustBandwidth()
             }
         }
     }
+
+    widget_->syncUi();
 }
 
 void SoapySdrRadio::setBandwidth(double bandwidth)
@@ -632,6 +641,12 @@ void SoapySdrRadio::setAgc(bool state)
     if (sdr_ == nullptr)
     {
         qDebug() << "No radio to set AGC to!";
+        return;
+    }
+
+    if (!agcAvailable_)
+    {
+        qDebug() << "This radio doesn't support setting AGC";
         return;
     }
 
