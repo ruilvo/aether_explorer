@@ -265,7 +265,7 @@ void SoapySdrWidget::syncUi()
     else if (bandwidthCombo_->count() > 0)
     {
         bandwidthCombo_->setCurrentIndex(bandwidthCombo_->count() - 1);
-        bandwidthBox_->setEnabled(true);
+        bandwidthBox_->setEnabled(bandwidthCombo_->count() > 1);
         bandwidthBox_->blockSignals(false);
     }
     bandwidthCombo_->blockSignals(false);
@@ -414,7 +414,7 @@ void SoapySdrWidget::deviceRead()
         bandwidthCombo_->addItem(customTxt);
     }
     bandwidthCombo_->blockSignals(false);
-    bandwidthCombo_->setEnabled(true);
+    bandwidthCombo_->setEnabled(bandwidthCombo_->count() > 1);
 
     unifiedGainSlider_->setEnabled(true);
 
