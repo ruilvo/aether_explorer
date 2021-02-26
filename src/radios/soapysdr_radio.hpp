@@ -188,7 +188,7 @@ class SoapySdrRadio : public ISource
     {
         return specificGains_;
     };
-    void setSpecificGain(QString name, double value);
+    void setSpecificGain(const QString &name, double value);
 
     // Widget ----------------------------------------------------------------------------
   private:

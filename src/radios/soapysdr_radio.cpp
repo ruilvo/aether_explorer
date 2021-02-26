@@ -684,7 +684,7 @@ void SoapySdrRadio::setGlobalGain(double gain)
     widget_->syncUi();
 }
 
-void SoapySdrRadio::setSpecificGain(QString name, double value)
+void SoapySdrRadio::setSpecificGain(const QString &name, double value)
 {
     if (!initialised_)
     {
@@ -720,9 +720,9 @@ void SoapySdrRadio::setSpecificGain(QString name, double value)
     globalGain_ = SoapySDRDevice_getGain(sdr_, SOAPY_SDR_RX, channel_);
     for (const auto &gainElem : specificGains_)
     {
-        auto name = gainElem.first.toLocal8Bit();
+        auto nameint = gainElem.first.toLocal8Bit();
         specificGains_[gainElem.first] =
-            SoapySDRDevice_getGainElement(sdr_, SOAPY_SDR_RX, channel_, name);
+            SoapySDRDevice_getGainElement(sdr_, SOAPY_SDR_RX, channel_, nameint);
     }
     widget_->syncUi();
 }
@@ -782,4 +782,6 @@ bool SoapySdrRadio::initialiseLibrary()
     SOAPY_LOAD_LIBRARY_FUNCION(SoapySDRDevice_getBandwidthRange);
     SOAPY_LOAD_LIBRARY_FUNCION(SoapySDRDevice_getStreamMTU);
     SOAPY_LOAD_LIBRARY_FUNCION(SoapySDR_errToStr);
+
+    return true;
 }
