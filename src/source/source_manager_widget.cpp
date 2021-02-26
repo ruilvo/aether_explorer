@@ -24,7 +24,15 @@ SourceManagerWidget::SourceManagerWidget(SourceManager *manager)
 
     layout_->addWidget(startStopPushButton_);
 
-    auto *formLayout = new QFormLayout();
+    auto *formLayout = new QFormLayout(); // NOLINT(cppcoreguidelines-owning-memory)
+
+    centreFrequencySpinBox_->setMinimum(0);
+    centreFrequencySpinBox_->setMaximum(
+        500'000'000.00); // NOLINT(readability-magic-numbers)
+    centreFrequencySpinBox_->setDecimals(2);
+    centreFrequencySpinBox_->setSuffix(" Hz");
+    centreFrequencySpinBox_->setGroupSeparatorShown(true);
+    centreFrequencySpinBox_->setKeyboardTracking(false);
 
     formLayout->addRow("Source", sourcesAvailableComboBox_);
     formLayout->addRow("Centre freq.", centreFrequencySpinBox_);
