@@ -40,13 +40,16 @@ class BasicSourceListener : public ISourceListener,
     };
     void receiveSamples(std::vector<std::complex<float>> &samples) override
     {
-        qDebug() << "Received " << samples.size() << " samples";
+        qDebug() << "Received " << samples.size() << " samples x " << counter_++;
     };
 
     std::shared_ptr<BasicSourceListener> getSharedPtr()
     {
         return shared_from_this();
     };
+
+  private:
+    size_t counter_{0};
 };
 
 int main(int argc, char *argv[])
