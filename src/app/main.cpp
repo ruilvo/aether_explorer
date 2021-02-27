@@ -7,12 +7,47 @@
  */
 
 #include "ISource.hpp"
+#include "ISourceListener.hpp"
 #include "soapysdr_radio.hpp"
 #include "source_factory.hpp"
 #include "source_listeners_collection.hpp"
 #include "source_manager.hpp"
 
 #include <QApplication>
+#include <QDebug>
+
+#include <memory>
+
+class BasicSourceListener : public ISourceListener,
+                            public std::enable_shared_from_this<BasicSourceListener>
+{
+  public:
+    BasicSourceListener()
+    {
+        qDebug() << "Initialized source listener";
+    };
+    ~BasicSourceListener() override
+    {
+        qDebug() << "Destroyed source listener";
+    };
+    void setSampleRate(double sampleRate) override
+    {
+        qDebug() << "Sample rate changed to " << sampleRate;
+    };
+    void setCentreFrequency(double centreFrequency) override
+    {
+        qDebug() << "Centre frequency changed to " << centreFrequency;
+    };
+    void receiveSamples(std::vector<std::complex<float>> &samples) override
+    {
+        qDebug() << "Received " << samples.size() << " samples";
+    };
+
+    std::shared_ptr<BasicSourceListener> getSharedPtr()
+    {
+        return shared_from_this();
+    };
+};
 
 int main(int argc, char *argv[])
 {
@@ -22,6 +57,8 @@ int main(int argc, char *argv[])
     /*
      * Now initialize the listeners...
      */
+    auto basicListener = std::make_shared<BasicSourceListener>();
+    listenersCollection.subscribe(basicListener->getSharedPtr());
 
     auto sourceFactory = SourceFactory();
     /*
