@@ -107,3 +107,4 @@ using SoapySDRDevice_getBandwidthRange_t = SoapySDRRange *(*)(const SoapySDRDevi
 using SoapySDRDevice_getStreamMTU_t = size_t (*)(const SoapySDRDevice *,
                                                  SoapySDRStream *);
 using SoapySDR_errToStr_t = const char *(*)(const int);
+using SoapySDRDevice_getHardwareInfo_t = SoapySDRKwargs (*)(const SoapySDRDevice *device);

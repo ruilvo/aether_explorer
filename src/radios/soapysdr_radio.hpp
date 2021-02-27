@@ -251,4 +251,5 @@ class SoapySdrRadio : public ISource
     SoapySDRDevice_getBandwidthRange_t SoapySDRDevice_getBandwidthRange;
     SoapySDRDevice_getStreamMTU_t SoapySDRDevice_getStreamMTU;
     SoapySDR_errToStr_t SoapySDR_errToStr;
+    SoapySDRDevice_getHardwareInfo_t SoapySDRDevice_getHardwareInfo;
 };

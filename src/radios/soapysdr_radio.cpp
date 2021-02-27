@@ -797,6 +797,7 @@ bool SoapySdrRadio::initialiseLibrary()
     SOAPY_LOAD_LIBRARY_FUNCION(SoapySDRDevice_getBandwidthRange);
     SOAPY_LOAD_LIBRARY_FUNCION(SoapySDRDevice_getStreamMTU);
     SOAPY_LOAD_LIBRARY_FUNCION(SoapySDR_errToStr);
+    SOAPY_LOAD_LIBRARY_FUNCION(SoapySDRDevice_getHardwareInfo);
 
     return true;
 }
