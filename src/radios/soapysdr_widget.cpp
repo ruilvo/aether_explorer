@@ -281,6 +281,8 @@ void SoapySdrWidget::syncUi()
     unifiedGainSlider_->setMaximum(static_cast<int>(ugainrange.maximum));
     unifiedGainSlider_->setValue(static_cast<int>(radio_->getGlobalGain()));
     unifiedGainSlider_->blockSignals(false);
+    unifiedGainSlider_->setEnabled(unifiedGainSlider_->minimum() !=
+                                   unifiedGainSlider_->maximum());
 
     auto specgains = radio_->getSpecificGains();
     for (const auto &gain : radio_->getSpecificGainRanges())
@@ -293,6 +295,9 @@ void SoapySdrWidget::syncUi()
         separateGainSliders_[gain.first]->setValue(
             static_cast<int>(specgains[gain.first]));
         separateGainSliders_[gain.first]->blockSignals(false);
+        separateGainSliders_[gain.first]->setEnabled(
+            separateGainSliders_[gain.first]->minimum() !=
+            separateGainSliders_[gain.first]->maximum());
     }
 }
 
@@ -434,6 +439,8 @@ void SoapySdrWidget::deviceStarted()
     channelCombo_->setEnabled(false);
     sampleRateCombo_->setEnabled(false);
     sampleRateBox_->setEnabled(false);
+    deviceCombo_->setEnabled(false);
+    deviceLineEdit_->setEnabled(false);
     running_ = true;
 }
 
@@ -442,6 +449,8 @@ void SoapySdrWidget::deviceStopped()
     channelCombo_->setEnabled(true);
     sampleRateCombo_->setEnabled(true);
     sampleRateBox_->setEnabled(true);
+    deviceCombo_->setEnabled(true);
+    deviceLineEdit_->setEnabled(true);
     running_ = false;
 
     syncUi();
