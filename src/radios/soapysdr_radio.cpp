@@ -485,6 +485,11 @@ void SoapySdrRadio::setCentreFrequency(double centreFrequency)
                      << SoapySDRDevice_lastError();
         }
     }
+
+    for (const auto &listener : listeners_)
+    {
+        listener->setCentreFrequency(centreFrequency_);
+    }
 }
 
 bool SoapySdrRadio::validateSampleRate(double sampleRate)
@@ -539,6 +544,11 @@ void SoapySdrRadio::setSampleRate(double sampleRate)
         sampleRate_ = SoapySDRDevice_getSampleRate(sdr_, SOAPY_SDR_RX, channel_);
         widget_->syncUi();
         return;
+    }
+
+    for (const auto &listener : listeners_)
+    {
+        listener->setSampleRate(sampleRate_);
     }
 
     readjustBandwidth();
