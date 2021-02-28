@@ -1,6 +1,7 @@
 [requires]
 boost/1.75.0
 fftw/3.3.9
+xsimd/7.4.9
 
 [generators]
 cmake_find_package
@@ -13,6 +14,7 @@ fftw:openmp=True
 fftw:threads=True
 fftw:combinedthreads=True
 fftw:precision=single
+xsimd:xtl_complex=True
 
 [imports]
 bin, *.dll -> ./bin
