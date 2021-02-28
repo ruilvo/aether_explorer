@@ -166,7 +166,7 @@ SoapySdrWidget::SoapySdrWidget(SoapySdrRadio *radio)
             deviceLineEdit_->setEnabled(false);
             return;
         }
-        deviceLineEdit_->setEnabled(true);
+        deviceLineEdit_->setEnabled(!running_);
     });
 
     // Handle changing device on the line edit;
@@ -180,12 +180,10 @@ SoapySdrWidget::SoapySdrWidget(SoapySdrRadio *radio)
             auto sr = radio_->getSupportedSampleRatesDiscrete()[static_cast<size_t>(idx)];
             radio_->setSampleRate(sr);
             sampleRateBox_->setEnabled(false);
-            sampleRateBox_->blockSignals(true);
             sampleRateBox_->setValue(sr);
             return;
         }
         sampleRateBox_->setEnabled(!running_);
-        sampleRateBox_->blockSignals(false);
     });
 
     connect(sampleRateBox_, &QDoubleSpinBox::valueChanged, [&](double value) {
@@ -202,12 +200,10 @@ SoapySdrWidget::SoapySdrWidget(SoapySdrRadio *radio)
             auto bw = radio_->getSupportedBandwidthsDiscrete()[static_cast<size_t>(idx)];
             radio_->setBandwidth(bw);
             bandwidthBox_->setEnabled(false);
-            bandwidthBox_->blockSignals(true);
             bandwidthBox_->setValue(bw);
             return;
         }
         bandwidthBox_->setEnabled(true);
-        bandwidthBox_->blockSignals(false);
     });
 
     connect(bandwidthBox_, &QDoubleSpinBox::valueChanged, [&](double value) {
@@ -220,57 +216,69 @@ SoapySdrWidget::SoapySdrWidget(SoapySdrRadio *radio)
 
 void SoapySdrWidget::syncUi()
 {
+    deviceCombo_->setEnabled(!running_);
+    deviceLineEdit_->setEnabled(!running_ && deviceCombo_->currentText() == customTxt);
+
     channelCombo_->blockSignals(true);
     channelCombo_->setCurrentIndex(static_cast<int>(radio_->getChannel()));
+    channelCombo_->setEnabled(!running_ && channelCombo_->count() > 1);
     channelCombo_->blockSignals(false);
 
     antennaCombo_->blockSignals(true);
     antennaCombo_->setCurrentText(radio_->getAntenna());
+    channelCombo_->setEnabled(channelCombo_->count() > 1);
     antennaCombo_->blockSignals(false);
 
     sampleRateCombo_->blockSignals(true);
     sampleRateBox_->blockSignals(true);
-    auto srs = radio_->getSupportedSampleRatesDiscrete();
-    auto csr = radio_->getSampleRate();
-    sampleRateBox_->setValue(csr);
-    auto sridx = std::find(srs.begin(), srs.end(), csr);
-    if (sridx != srs.end())
+    auto supportedSampleRatedDiscrete = radio_->getSupportedSampleRatesDiscrete();
+    auto currentSampleRate = radio_->getSampleRate();
+    sampleRateBox_->setValue(currentSampleRate);
+    auto sampleRateIdx = std::find(supportedSampleRatedDiscrete.begin(),
+                                   supportedSampleRatedDiscrete.end(), currentSampleRate);
+    if (sampleRateIdx != supportedSampleRatedDiscrete.end())
     {
-        sampleRateCombo_->setCurrentIndex(
-            static_cast<int>(std::distance(srs.begin(), sridx)));
+        sampleRateCombo_->setCurrentIndex(static_cast<int>(
+            std::distance(supportedSampleRatedDiscrete.begin(), sampleRateIdx)));
         sampleRateBox_->setEnabled(false);
     }
     else if (sampleRateCombo_->count() > 0)
     {
         sampleRateCombo_->setCurrentIndex(sampleRateCombo_->count() - 1);
+        sampleRateBox_->setValue(currentSampleRate);
         sampleRateBox_->setEnabled(!running_);
-        sampleRateBox_->blockSignals(false);
     }
+    sampleRateCombo_->setEnabled(!running_ && sampleRateCombo_->count() > 1);
     sampleRateCombo_->blockSignals(false);
+    sampleRateBox_->blockSignals(false);
 
     bandwidthCombo_->blockSignals(true);
     bandwidthBox_->blockSignals(true);
-    auto sbw = radio_->getSupportedBandwidthsDiscrete();
-    auto cbw = radio_->getBandwidth();
-    bandwidthBox_->setValue(cbw);
-    auto cbidx = std::find(sbw.begin(), sbw.end(), cbw);
+    auto supportedBandwidthsDiscrete = radio_->getSupportedBandwidthsDiscrete();
+    auto currentBandwidth = radio_->getBandwidth();
+    bandwidthBox_->setValue(currentBandwidth);
+    auto currentBandwidthIndex =
+        std::find(supportedBandwidthsDiscrete.begin(), supportedBandwidthsDiscrete.end(),
+                  currentBandwidth);
     auto *model = dynamic_cast<QStandardItemModel *>(bandwidthCombo_->model());
-    for (auto i = 0U; i < sbw.size(); i++)
+    for (auto i = 0U; i < supportedBandwidthsDiscrete.size(); i++)
     {
-        model->item(static_cast<int>(i), 0)->setEnabled(sbw[i] <= csr);
+        model->item(static_cast<int>(i), 0)
+            ->setEnabled(supportedBandwidthsDiscrete[i] <= currentSampleRate);
     }
-    if (cbidx != sbw.end())
+    if (currentBandwidthIndex != supportedBandwidthsDiscrete.end())
     {
-        bandwidthCombo_->setCurrentIndex(
-            static_cast<int>(std::distance(sbw.begin(), cbidx)));
+        bandwidthCombo_->setCurrentIndex(static_cast<int>(
+            std::distance(supportedBandwidthsDiscrete.begin(), currentBandwidthIndex)));
         bandwidthBox_->setEnabled(false);
     }
     else if (bandwidthCombo_->count() > 0)
     {
         bandwidthCombo_->setCurrentIndex(bandwidthCombo_->count() - 1);
-        bandwidthBox_->setEnabled(bandwidthCombo_->count() > 1);
-        bandwidthBox_->blockSignals(false);
+        bandwidthBox_->setEnabled(bandwidthCombo_->currentText() == customTxt);
     }
+    bandwidthCombo_->setEnabled(bandwidthCombo_->count() > 1);
+    bandwidthBox_->blockSignals(false);
     bandwidthCombo_->blockSignals(false);
 
     agcBox_->blockSignals(true);
@@ -381,15 +389,7 @@ void SoapySdrWidget::deviceRead()
     {
         channelCombo_->addItem(QString("Channel %1").arg(i));
     }
-    if (channelCombo_->count() > 1)
-    {
-        channelCombo_->blockSignals(false);
-        channelCombo_->setEnabled(true);
-    }
-    else
-    {
-        channelCombo_->setEnabled(false);
-    }
+    channelCombo_->blockSignals(false);
 
     antennaCombo_->blockSignals(true);
     antennaCombo_->clear();
@@ -398,15 +398,7 @@ void SoapySdrWidget::deviceRead()
     {
         antennaCombo_->addItem(ant);
     }
-    if (antennaCombo_->count() > 1)
-    {
-        antennaCombo_->blockSignals(false);
-        antennaCombo_->setEnabled(true);
-    }
-    else
-    {
-        antennaCombo_->setEnabled(false);
-    }
+    antennaCombo_->blockSignals(false);
 
     sampleRateCombo_->blockSignals(true);
     sampleRateBox_->blockSignals(true);
@@ -422,7 +414,6 @@ void SoapySdrWidget::deviceRead()
     }
     sampleRateCombo_->blockSignals(false);
     sampleRateBox_->blockSignals(false);
-    sampleRateCombo_->setEnabled(true);
 
     bandwidthCombo_->blockSignals(true);
     bandwidthCombo_->clear();
@@ -436,9 +427,6 @@ void SoapySdrWidget::deviceRead()
         bandwidthCombo_->addItem(customTxt);
     }
     bandwidthCombo_->blockSignals(false);
-    bandwidthCombo_->setEnabled(bandwidthCombo_->count() > 1);
-
-    unifiedGainSlider_->setEnabled(true);
 
     // Create sliders
     for (const auto &gain : radio_->getSpecificGainRanges())
@@ -446,6 +434,10 @@ void SoapySdrWidget::deviceRead()
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
         separateGainSliders_[gain.first] = new QSlider(Qt::Horizontal);
         layout_->addRow(gain.first, separateGainSliders_[gain.first]);
+        connect(separateGainSliders_[gain.first], &QSlider::valueChanged,
+                [this, gain](int value) {
+                    radio_->setSpecificGain(gain.first, static_cast<double>(value));
+                });
     }
 
     syncUi();
@@ -453,21 +445,13 @@ void SoapySdrWidget::deviceRead()
 
 void SoapySdrWidget::deviceStarted()
 {
-    channelCombo_->setEnabled(false);
-    sampleRateCombo_->setEnabled(false);
-    sampleRateBox_->setEnabled(false);
-    deviceCombo_->setEnabled(false);
-    deviceLineEdit_->setEnabled(false);
     running_ = true;
+
+    syncUi();
 }
 
 void SoapySdrWidget::deviceStopped()
 {
-    channelCombo_->setEnabled(true);
-    sampleRateCombo_->setEnabled(true);
-    sampleRateBox_->setEnabled(true);
-    deviceCombo_->setEnabled(true);
-    deviceLineEdit_->setEnabled(true);
     running_ = false;
 
     syncUi();
