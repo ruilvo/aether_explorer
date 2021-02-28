@@ -100,6 +100,7 @@ void SourceManagerWidget::sourcesAvailableComboBoxTextChanged(const QString &tex
         if (source != nullptr)
         {
             layout_->addWidget(source->getWidget());
+            source->getWidget()->setParent(this);
         }
     }
 }

@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QStandardItemModel>
 #include <QString>
+#include <QTimer>
 
 #include <algorithm>
 #include <iterator>
@@ -108,6 +109,8 @@ SoapySdrWidget::SoapySdrWidget(SoapySdrRadio *radio)
       bandwidthCombo_(new QComboBox(this)), bandwidthBox_(new QDoubleSpinBox(this)),
       agcBox_(new QCheckBox(this)), unifiedGainSlider_(new QSlider(Qt::Horizontal, this))
 {
+    setMinimumWidth(1); // Makes parent take control of the size;
+
     // Setup the layout
     layout_->addRow("Device", deviceCombo_);
     layout_->addRow("Dev. (custom)", deviceLineEdit_);
@@ -351,6 +354,20 @@ void SoapySdrWidget::deviceDestroyed()
         layout_->removeRow(separateGainSliders_[slider.first]);
     }
     separateGainSliders_.clear();
+
+    if (parentWidget() != nullptr)
+    {
+        // This is a "funny" hack that "refits" the parent widget to changing widget
+        // sizes. You can't call this directly because it must happen in the event loop.
+        // The goal is to only resize in the vertical direction.
+        QTimer::singleShot(
+            /* Event loop delay */ 10, // NOLINT(readability-magic-numbers)
+            [&]() {
+                auto sHint = parentWidget()->sizeHint();
+                auto cSize = parentWidget()->size();
+                parentWidget()->resize(cSize.width(), sHint.height());
+            });
+    }
 }
 
 void SoapySdrWidget::deviceRead()
