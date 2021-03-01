@@ -226,7 +226,7 @@ void SoapySdrWidget::syncUi()
 
     antennaCombo_->blockSignals(true);
     antennaCombo_->setCurrentText(radio_->getAntenna());
-    channelCombo_->setEnabled(channelCombo_->count() > 1);
+    antennaCombo_->setEnabled(antennaCombo_->count() > 1);
     antennaCombo_->blockSignals(false);
 
     sampleRateCombo_->blockSignals(true);
